@@ -16,12 +16,12 @@ app.get('/download-cv', (req, res) => {
     console.error('Error reading CV file:', error);
     res.status(500).send('Error downloading CV');
   });
-
-  // Set the appropriate headers for the file download
   res.setHeader('Content-disposition', 'attachment; filename=cv.pdf');
   res.setHeader('Content-type', 'application/pdf');
 
   cvFileStream.pipe(res);
+  console.log("done")
+
 });
 
 app.listen(PORT, () => {
