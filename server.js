@@ -1,14 +1,29 @@
+// server.js
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
-
 const app = express();
+const fs = require('fs');
+const path = require('path');
+const PORT = 5000; // You can choose any available port
+
 app.use(cors());
 
-// Serve the CV file as a static file
-app.use('/cv', express.static(path.join(__dirname, 'cv.pdf')));
+app.get('/download-cv', (req, res) => {
+  const cvFilePath = path.join(__dirname, 'cv', 'cv.pdf');
+  const cvFileStream = fs.createReadStream(cvFilePath);
 
-const port = 5000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  cvFileStream.on('error', (error) => {
+    console.error('Error reading CV file:', error);
+    res.status(500).send('Error downloading CV');
+  });
+
+  // Set the appropriate headers for the file download
+  res.setHeader('Content-disposition', 'attachment; filename=cv.pdf');
+  res.setHeader('Content-type', 'application/pdf');
+
+  cvFileStream.pipe(res);
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
